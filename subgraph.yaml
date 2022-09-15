@@ -1,0 +1,38 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Factory
+    network: fantom
+    source:
+      address: "0x08b3CCa975a82cFA6f912E0eeDdE53A629770D3f"
+      abi: Factory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - FeeAmountOwnershipTransferred
+        - FeeToTransferred
+        - OwnerFeeShareUpdated
+        - OwnershipTransferred
+        - PairCreated
+        - ReferrerFeeShareUpdated
+      abis:
+        - name: Factory
+          file: ./abis/Factory.json
+      eventHandlers:
+        - event: FeeAmountOwnershipTransferred(indexed address,indexed address)
+          handler: handleFeeAmountOwnershipTransferred
+        - event: FeeToTransferred(indexed address,indexed address)
+          handler: handleFeeToTransferred
+        - event: OwnerFeeShareUpdated(uint256,uint256)
+          handler: handleOwnerFeeShareUpdated
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: PairCreated(indexed address,indexed address,address,uint256)
+          handler: handlePairCreated
+        - event: ReferrerFeeShareUpdated(address,uint256,uint256)
+          handler: handleReferrerFeeShareUpdated
+      file: ./src/factory.ts
