@@ -1,4 +1,6 @@
-specVersion: 0.0.1
+specVersion: 0.0.4
+description: Excalibur is a highly flexible and ecosystem-oriented Fantom AMM providing fee mining, swap referrals and customizable fees.
+repository: https://github.com/unchase-subgraphs/excalibur-exchange-fantom-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,31 +10,46 @@ dataSources:
     source:
       address: "0x08b3CCa975a82cFA6f912E0eeDdE53A629770D3f"
       abi: Factory
+      startBlock: 32488636
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - FeeAmountOwnershipTransferred
-        - FeeToTransferred
-        - OwnerFeeShareUpdated
-        - OwnershipTransferred
-        - PairCreated
-        - ReferrerFeeShareUpdated
+        - Pair
+        - Token
       abis:
         - name: Factory
           file: ./abis/Factory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
       eventHandlers:
-        - event: FeeAmountOwnershipTransferred(indexed address,indexed address)
-          handler: handleFeeAmountOwnershipTransferred
-        - event: FeeToTransferred(indexed address,indexed address)
-          handler: handleFeeToTransferred
-        - event: OwnerFeeShareUpdated(uint256,uint256)
-          handler: handleOwnerFeeShareUpdated
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: PairCreated(indexed address,indexed address,address,uint256)
           handler: handlePairCreated
-        - event: ReferrerFeeShareUpdated(address,uint256,uint256)
-          handler: handleReferrerFeeShareUpdated
       file: ./src/factory.ts
+templates:
+  - kind: ethereum/contract
+    name: Pair
+    network: fantom
+    source:
+      abi: Pair
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/core.ts
+      entities:
+        - Pair
+        - Token
+      abis:
+        - name: Pair
+          file: ./abis/pair.json
+        - name: Factory
+          file: ./abis/factory.json
+      eventHandlers:
+        - event: Sync(uint112,uint112)
+          handler: handleSync
